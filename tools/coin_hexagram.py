@@ -24,7 +24,7 @@ class CoinHexagramTool(base.BaseOracleTool):
                     try:
                         throws.append(int(token))
                     except ValueError:
-                        raise ValueError(f"无效的掷币结果：{token}")
+                        raise ValueError("掷币结果只能由 6/7/8/9 或三位硬币字符串组成")
         seed = tool_parameters.get("seed") or None
         question = tool_parameters.get("question") or ""
 

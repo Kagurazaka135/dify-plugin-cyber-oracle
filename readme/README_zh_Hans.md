@@ -1,5 +1,7 @@
 # 赛博神棍 · Cyber Oracle
 
+[English](../README.md)
+
 谁不想每天急头白脸的在dify算一卦。
 
 一个装进 Dify 就有**七种算命方法**的 Tool 插件。排盘全是本地确定性计算——**一个模型都不配也能用**。想要 AI 给你解一解卦？选个模型就行，走 Dify 反向调用，插件自己一个 Key 都不存。
@@ -101,15 +103,15 @@
 
 ## 隐私
 
-排盘全程在本地完成，不联网、不上传。开启 AI 解读时，卦象和你所问之事会发给你**自己工作区配置的模型**——数据去向就是你自己选的那个模型供应商。详见 [`PRIVACY.md`](../PRIVACY.md)。
+排盘全程在本地完成，不联网、不上传。开启 AI 解读时，卦象和你所问之事会发给你**自己工作区配置的模型**——数据去向就是你自己选的那个模型供应商。详见 [`PRIVACY.md`](PRIVACY.md)。
 
 ---
 
 ## 数据与致谢
 
-七种方法的算法与签文数据来自 [赛博神棍命令行版](https://github.com/Kagurazaka135/code-sanctuary)，数据出处与授权见 [`data/SOURCES.md`](../data/SOURCES.md)。
+七种方法的算法与签文数据来自 [赛博神棍命令行版](https://github.com/Kagurazaka135/code-sanctuary)，数据出处与授权见 [`data/SOURCES.md`](data/SOURCES.md)。
 
-其中诸葛神数的白话解读，是用本仓库 [`scripts/`](../scripts/README.md) 里的脚本
+其中诸葛神数的白话解读，是用本仓库 [`scripts/`](scripts/README.md) 里的脚本
 从公有领域的签诗与文言解重新生成的，未使用任何第三方整理文本。
 
 ---
@@ -121,3 +123,11 @@
 若签文有灵，纯属概率巧合；若代码有 bug，还请诸位大人明鉴。
 
 以 MIT 协议奉上，诸君自取，且算且珍惜。
+
+---
+
+## At a Glance (EN)
+
+A Dify tool plugin bundling seven Chinese divination methods. Casting is deterministic local computation and works with **no model configured**. AI interpretation is optional and reverse-invokes the LLM already set up in your Dify workspace — the plugin stores no API key. Supports reproducible draws via `seed` and configurable timezones. **For entertainment only.**
+
+Tools: Plum Blossom (梅花易数), Tarot, Bone Weight (称骨), Zhuge Oracle (诸葛神数), Xiao Liu Ren (小六壬), Guan Di Lots (关帝灵签), Coin Hexagram (金钱卦).

@@ -14,6 +14,11 @@ description:
     占卜结果仅供娱乐。
 icon: icon.svg
 icon_dark: icon-dark.svg
+network:
+  # 运行时插件不发起任何外部请求；以下域名仅作为数据集 provenance 链接
+  # 出现在 data/ling_qian_guan_di.json 中，不会被访问。
+  domains:
+    - zh.wikisource.org
 resource:
   memory: 268435456
   permission:
@@ -35,6 +40,8 @@ meta:
   minimum_dify_version: "1.0.0"
 created_at: 2026-10-22T00:00:00+08:00
 privacy: PRIVACY.md
+repo: https://github.com/Kagurazaka135/dify-plugin-cyber-oracle
+contact: songhengwu14@gmail.com
 tags:
   - utilities
 verified: false

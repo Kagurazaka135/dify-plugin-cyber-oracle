@@ -1,131 +1,174 @@
-# 赛博神棍 · Cyber Oracle
+# Cyber Oracle
 
-谁不想每天急头白脸的在dify算一卦。
+Seven Chinese divination methods as a Dify tool plugin. Casting is fully
+deterministic local computation — **it works with no model configured at all**.
+AI interpretation is an optional enhancement that reverse-invokes the LLM already
+set up in your Dify workspace; the plugin never stores an API key.
 
-一个装进 Dify 就有**七种算命方法**的 Tool 插件。排盘全是本地确定性计算——**一个模型都不配也能用**。想要 AI 给你解一解卦？选个模型就行，走 Dify 反向调用，插件自己一个 Key 都不存。
+> **For entertainment only.** Divination results are not factual predictions and
+> should not be used to make decisions.
 
-> **仅供娱乐。** 排盘结果不构成任何事实预测，也不该拿来决策。
-
-
----
-
-## 为什么值得装
-
-- **零依赖排盘**：不配模型、不联网，排盘照跑。Workflow 里当纯计算节点用也成立。
-- **解读可选**：`interpret=false` 或干脆不选模型 → 零模型调用，不烧 token。
-- **可复现**：塔罗 / 灵签 / 金钱卦支持 `seed`，同一个 seed 永远同一卦。
-- **时区可配**：容器跑 UTC 也不会算错卦（见下文「时区」）。
-- **不存凭据**：插件内没有任何 API Key，解读用的是你工作区里已配置的模型。
+**Chinese documentation:** [readme/README_zh_Hans.md](readme/README_zh_Hans.md)
 
 ---
 
-## 七种方法
+## Why Install It
 
-| 工具 | 方法 | 干什么 |
+- **Zero-dependency casting** — no model, no network, still works. Usable as a
+  pure computation node inside a Workflow.
+- **Optional interpretation** — set `interpret=false` or leave the model empty
+  and the plugin makes **zero model calls**.
+- **Reproducible** — Tarot, Guan Di lots and Coin Hexagram accept a `seed`; the
+  same seed always yields the same draw.
+- **Timezone-aware** — a container running in UTC will not silently compute a
+  different hexagram (see [Timezone](#timezone)).
+- **No stored credentials** — the plugin holds no API key; interpretation uses
+  the model configured in your own workspace.
+
+---
+
+## The Seven Methods
+
+| Tool | Method | What it does |
 |---|---|---|
-| `plum_blossom` | 梅花易数 | 按日期时辰起时间卦，出本卦、变卦、动爻 |
-| `tarot` | 塔罗牌 | 抽 1 / 3 / 10 张（单张 / 三张阵 / 凯尔特十字），含正逆位 |
-| `bone_weight` | 称骨算命 | 按出生日期时辰查袁天罡称骨歌 |
-| `zhuge_qian` | 诸葛神数 | 报三个汉字，得 384 签之一 |
-| `xiao_liu_ren` | 小六壬 | 按月、日、时推六掌诀 |
-| `ling_qian` | 关帝灵签 | 抽 100 签之一（随机或指定签号） |
-| `coin_hexagram` | 金钱卦 | 六次掷币（6/7/8/9）起周易卦，支持静卦与多动爻 |
+| `plum_blossom` | Plum Blossom | Time-based hexagram from date and hour: original hexagram, changed hexagram, moving line |
+| `tarot` | Tarot | Draw 1 / 3 / 10 cards (single card, three-card spread, Celtic Cross), upright or reversed |
+| `bone_weight` | Bone Weight | Yuan Tiangang bone-weight fortune from birth date and hour |
+| `zhuge_qian` | Zhuge Oracle | Report three Chinese characters, receive one of 384 oracle poems |
+| `xiao_liu_ren` | Xiao Liu Ren | Palm-counting divination from month, day and hour |
+| `ling_qian` | Guan Di Lots | Draw one of 100 Guan Di oracle lots (random or by number) |
+| `coin_hexagram` | Coin Hexagram | I Ching hexagram from six coin tosses (6/7/8/9), supporting static and multi-moving-line readings |
 
 ---
 
-## 装法
+## Installation
 
-1. Dify 里点右上角 **插件 → 安装插件 → 本地文件**
-2. 选 `cyber-oracle-0.0.1.difypkg`
-3. 装完在插件列表里看到 **赛博神棍 / Cyber Oracle**，带七个工具
+1. In Dify, open **Plugins → Install Plugin → Local File**
+2. Select `cyber-oracle-0.0.1.difypkg`
+3. After installation you get the provider **Cyber Oracle** with seven
+   tools
 
-然后在 Workflow 里拖一个**工具节点**，选方法、填参数、要解读就选个模型，跑。
+Then add a **tool node** in a Workflow, choose a method, fill in the parameters,
+and pick a model if you want interpretation.
+
+### Build from source
+
+```bash
+pip install dify-plugin>=0.9.0
+python -m main
+```
+
+To package:
+
+```bash
+dify plugin package ./dify-plugin-cyber-oracle
+```
 
 ---
 
-## 用起来长什么样
+## What It Looks Like
 
-放一个工具节点，方法选 `tarot`：
+Drop in a tool node, pick the `tarot` tool:
 
-| 参数 | 填什么 |
+| Parameter | Value |
 |---|---|
-| `question` | 这份 offer 要不要接 |
-| `spread` | 三张牌阵 |
-| `model` | 工作区里任意 LLM（不选就只排盘） |
+| `question` | Should I take this offer? |
+| `spread` | `three_card` |
+| `model` | any LLM in your workspace (omit to cast only) |
 
-返回三段东西：
+The tool returns three things:
 
-- **文本消息**——人看的排盘摘要 + AI 解读
-- **JSON**——完整结构化结果，节点之间传数据用
-- **四个输出变量**——`method` / `summary` / `result` / `interpretation`，workflow 里直接引用
+- **A text message** — human-readable casting summary plus AI interpretation
+- **JSON** — the full structured result, for passing data between nodes
+- **Four output variables** — `method` / `summary` / `result` / `interpretation`,
+  referenceable directly in the workflow
 
 ---
 
-## 参数
+## Parameters
 
-三个公共参数，七个工具都有：
+Three parameters are shared by all seven tools:
 
-| 参数 | 类型 | 默认 | 说明 |
+| Parameter | Type | Default | Description |
 |---|---|---|---|
-| `question` | string | 空 | 所问之事，喂给解读用 |
-| `model` | 模型选择器 | — | 解读用模型；不选则只排盘 |
-| `interpret` | boolean | `true` | 是否生成 AI 解读 |
+| `question` | string | empty | The matter you are asking about; fed to interpretation |
+| `model` | model selector | — | LLM for interpretation; leave empty to cast only |
+| `interpret` | boolean | `true` | Whether to generate an AI interpretation |
 
-各方法专属参数：
+Method-specific parameters:
 
-| 工具 | 专属参数 |
+| Tool | Specific parameters |
 |---|---|
-| `plum_blossom` / `xiao_liu_ren` | `date`（YYYY-MM-DD，默认今天）、`hour`（0-23，默认当前小时） |
-| `tarot` | `spread`（`single_card` / `three_card` / `celtic_cross`）、`seed` |
-| `bone_weight` | `birth_date`（必填）、`birth_hour`、`gender`（`male` / `female` / `unknown`） |
-| `zhuge_qian` | `chars`（三个汉字，必填） |
-| `ling_qian` | `qian_number`（1-100，不填随机）、`seed` |
-| `coin_hexagram` | `throws`（六个数，逗号分隔，取 6/7/8/9；不填随机）、`seed` |
+| `plum_blossom` / `xiao_liu_ren` | `date` (YYYY-MM-DD, defaults to today), `hour` (0-23, defaults to the current hour) |
+| `tarot` | `spread` (`single_card` / `three_card` / `celtic_cross`), `seed` |
+| `bone_weight` | `birth_date` (required), `birth_hour`, `gender` (`male` / `female` / `unknown`) |
+| `zhuge_qian` | `chars` (three Chinese characters, required) |
+| `ling_qian` | `qian_number` (1-100, random when omitted), `seed` |
+| `coin_hexagram` | `throws` (six comma-separated values, each 6/7/8/9; random when omitted), `seed` |
+
+### Outputs
+
+Every tool returns four variables, declared in `output_schema` so workflows can
+reference them:
+
+- `method` — method name (string)
+- `summary` — human-readable casting summary (string)
+- `result` — full structured casting result (object)
+- `interpretation` — AI interpretation (string; empty when skipped or failed)
+
+Plus a full JSON message and a human-readable text message. If interpretation
+fails, the casting result is still returned and the failure reason is noted in
+`summary`.
 
 ---
 
-## 时区
+## Timezone
 
-按时间起卦的方法（梅花易数、小六壬）对时区很敏感——**差 8 小时就是另一个卦**。插件按这个优先级取时区：
+Time-based methods (Plum Blossom, Xiao Liu Ren) are sensitive to timezone —
+**eight hours of offset is a different hexagram**. The plugin resolves the
+timezone in this order:
 
-1. 工具参数里的 `timezone`（如果该版本暴露了）
-2. provider 凭据里的 **时区** 项（装插件时填一次，七个工具共享）
-3. 插件容器的 `TZ` 环境变量
-4. 兜底 `Asia/Shanghai`
+1. The `timezone` tool parameter, when the tool exposes one
+2. The **Timezone** field in the provider credentials (set once at install, shared
+   by all seven tools)
+3. The plugin container's `TZ` environment variable
+4. Fallback to `Asia/Shanghai`
 
-本地自建 Dify 的话，最省事的是给插件容器设 `TZ`。云端部署则建议在 provider 凭据里填所在地。
+For a self-hosted Dify, setting `TZ` on the plugin container is the simplest
+option. For cloud deployments, fill in your local timezone in the provider
+credentials.
 
-只填 `date` 不填 `hour` 时，默认按**当前小时**起卦；要做历史回溯就显式填 `hour`。
-
----
-
-## 隐私
-
-排盘全程在本地完成，不联网、不上传。开启 AI 解读时，卦象和你所问之事会发给你**自己工作区配置的模型**——数据去向就是你自己选的那个模型供应商。详见 [`PRIVACY.md`](PRIVACY.md)。
-
----
-
-## 数据与致谢
-
-七种方法的算法与签文数据来自 [赛博神棍命令行版](https://github.com/Kagurazaka135/code-sanctuary)，数据出处与授权见 [`data/SOURCES.md`](data/SOURCES.md)。
-
-其中诸葛神数的白话解读，是用本仓库 [`scripts/`](scripts/README.md) 里的脚本
-从公有领域的签诗与文言解重新生成的，未使用任何第三方整理文本。
+When only `date` is given without `hour`, the current hour is used; pass `hour`
+explicitly for historical lookups.
 
 ---
 
-## 赛博免责声明
+## Privacy
 
-此等卦象，皆为大预言模型所言，非小人搬运。签诗古文，本就出自千年前的白纸黑字；白话解签，则由硅基算力现写，不取他人一字。
-
-若签文有灵，纯属概率巧合；若代码有 bug，还请诸位大人明鉴。
-
-以 MIT 协议奉上，诸君自取，且算且珍惜。
+Casting runs entirely locally — no network, no upload. When AI interpretation is
+enabled, the hexagram and your question are sent to **the model you configured in
+your own workspace**; that model provider is the only recipient. See
+[`PRIVACY.md`](PRIVACY.md) for details.
 
 ---
 
-## At a Glance (EN)
+## Data and Credits
 
-A Dify tool plugin bundling seven Chinese divination methods. Casting is deterministic local computation and works with **no model configured**. AI interpretation is optional and reverse-invokes the LLM already set up in your Dify workspace — the plugin stores no API key. Supports reproducible draws via `seed` and configurable timezones. **For entertainment only.**
+The algorithms and oracle texts come from the
+[Cyber Oracle CLI project](https://github.com/Kagurazaka135/code-sanctuary). Data
+provenance and licensing are documented in [`data/SOURCES.md`](data/SOURCES.md).
 
-Tools: Plum Blossom (梅花易数), Tarot, Bone Weight (称骨), Zhuge Oracle (诸葛神数), Xiao Liu Ren (小六壬), Guan Di Lots (关帝灵签), Coin Hexagram (金钱卦).
+The modern-language readings for the Zhuge Oracle are generated by the scripts in
+[`scripts/`](scripts/README.md) from public-domain source poems and classical
+commentary; no third-party compiled text is used.
+
+**Network access:** none. The plugin makes no outbound requests; interpretation
+travels through Dify's own reverse invocation channel.
+
+---
+
+## Disclaimer
+
+For entertainment only. Divination output is generated by probabilistic models and
+must not be treated as factual prediction, professional advice, or a basis for
+decisions with financial or personal consequence.
