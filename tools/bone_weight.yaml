@@ -1,0 +1,115 @@
+identity:
+  name: bone_weight
+  author: kagurazaka135
+  label:
+    en_US: Bone Weight Fortune
+    zh_Hans: 称骨算命
+description:
+  human:
+    en_US: Yuan Tiangang bone-weight fortune from a birth date and hour
+      (deterministic). For entertainment only.
+    zh_Hans: 按出生日期与时辰查袁天罡称骨歌（确定性排盘）。占卜结果仅供娱乐。
+  llm: Compute the Yuan Tiangang bone-weight fortune (称骨算命) from a birth
+    date and optional birth hour and gender. Use when the user asks for 称骨.
+    Requires birth_date in YYYY-MM-DD. For entertainment only.
+parameters:
+  - name: question
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Question
+      zh_Hans: 所问之事
+    human_description:
+      en_US: What the user wants to ask about (used for interpretation).
+      zh_Hans: 用户所问之事（用于 AI 解读）。
+    llm_description: The question or matter the user wants to divine about.
+  - name: model
+    type: model-selector
+    scope: llm
+    required: false
+    form: form
+    label:
+      en_US: Interpretation Model
+      zh_Hans: 解读模型
+    human_description:
+      en_US: LLM used for AI interpretation; leave empty to compute only.
+      zh_Hans: 用于 AI 解读的模型；不选则只排盘不解读。
+    llm_description: Model configuration for AI interpretation.
+  - name: interpret
+    type: boolean
+    required: false
+    form: form
+    default: true
+    label:
+      en_US: Enable AI Interpretation
+      zh_Hans: 启用 AI 解读
+    human_description:
+      en_US: Whether to run AI interpretation with the selected model.
+      zh_Hans: 是否用所选模型生成 AI 解读。
+    llm_description: Whether to run AI interpretation after computing.
+  - name: birth_date
+    type: date
+    required: true
+    form: llm
+    label:
+      en_US: Birth Date
+      zh_Hans: 出生日期
+    human_description:
+      en_US: Birth date in YYYY-MM-DD (Gregorian calendar).
+      zh_Hans: 出生日期，格式 YYYY-MM-DD（公历）。
+    llm_description: Birth date in YYYY-MM-DD format (Gregorian calendar). Required.
+  - name: birth_hour
+    type: number
+    required: false
+    form: llm
+    label:
+      en_US: Birth Hour (0-23)
+      zh_Hans: 出生小时（0-23）
+    human_description:
+      en_US: Birth hour in 24-hour format; defaults to 0.
+      zh_Hans: 出生小时（24 小时制，0-23），默认 0。
+    llm_description: Birth hour in 24-hour format (0-23). Defaults to 0.
+  - name: gender
+    type: select
+    required: false
+    form: form
+    default: unknown
+    options:
+      - value: male
+        label:
+          en_US: Male
+          zh_Hans: 男
+      - value: female
+        label:
+          en_US: Female
+          zh_Hans: 女
+      - value: unknown
+        label:
+          en_US: Unknown
+          zh_Hans: 未知
+    label:
+      en_US: Gender
+      zh_Hans: 性别
+    human_description:
+      en_US: Gender for the fortune poem variant.
+      zh_Hans: 性别（影响批语男女命版本）。
+    llm_description: Gender selection for the bone-weight poem.
+output_schema:
+  type: object
+  properties:
+    method:
+      type: string
+      description: Method name.
+    summary:
+      type: string
+      description: Human-readable bone-weight summary.
+    result:
+      type: object
+      description: Full structured bone-weight result.
+    interpretation:
+      type: string
+      description: AI interpretation (empty if skipped or failed).
+extra:
+  python:
+    source: tools/bone_weight.py

@@ -1,0 +1,41 @@
+identity:
+  author: kagurazaka135
+  name: cyber_oracle
+  label:
+    en_US: Cyber Oracle
+    zh_Hans: 赛博神棍
+  description:
+    en_US: Seven divination methods with deterministic casting and optional AI
+      interpretation. For entertainment only.
+    zh_Hans: 七种算命方法，排盘确定性纯计算，解读可选接入工作区模型。
+      占卜结果仅供娱乐。
+  icon: icon.svg
+  tags:
+    - utilities
+credentials_for_provider:
+  timezone:
+    type: text-input
+    required: false
+    label:
+      en_US: Timezone
+      zh_Hans: 时区
+    placeholder:
+      en_US: Asia/Shanghai
+      zh_Hans: Asia/Shanghai
+    help:
+      en_US: IANA timezone used for casting (e.g. Asia/Shanghai, America/New_York).
+        Leave empty to fall back to the plugin container's TZ env var, then
+        Asia/Shanghai.
+      zh_Hans: 排盘使用的 IANA 时区（如 Asia/Shanghai、America/New_York）。留空则依次回退到容器
+        TZ 环境变量，最后兜底 Asia/Shanghai。
+tools:
+  - tools/plum_blossom.yaml
+  - tools/tarot.yaml
+  - tools/bone_weight.yaml
+  - tools/zhuge_qian.yaml
+  - tools/xiao_liu_ren.yaml
+  - tools/ling_qian.yaml
+  - tools/coin_hexagram.yaml
+extra:
+  python:
+    source: provider/cyber_oracle.py

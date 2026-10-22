@@ -1,0 +1,10 @@
+.git/
+.env
+__pycache__/
+*.pyc
+.venv/
+*.difypkg
+tests/
+ZCode-*.md
+DIFY-PLUGIN-SPEC.md
+dist/

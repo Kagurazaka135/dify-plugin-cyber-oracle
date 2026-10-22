@@ -1,0 +1,93 @@
+identity:
+  name: coin_hexagram
+  author: kagurazaka135
+  label:
+    en_US: Coin Hexagram
+    zh_Hans: 金钱卦
+description:
+  human:
+    en_US: Cast a hexagram with six coin tosses (I Ching), optionally using
+      provided throws or a seed. For entertainment only.
+    zh_Hans: 六次掷币起周易卦（金钱卦），可指定掷币结果或种子。占卜结果仅供娱乐。
+  llm: Cast an I Ching hexagram by six coin tosses (金钱卦). Use when the user
+    asks for 金钱卦 or coin-based hexagram. Optional throws (six values, each
+    6/7/8/9, comma separated, bottom to top) or a seed for reproducible
+    casting; random when omitted. For entertainment only.
+parameters:
+  - name: question
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Question
+      zh_Hans: 所问之事
+    human_description:
+      en_US: What the user wants to ask about (used for interpretation).
+      zh_Hans: 用户所问之事（用于 AI 解读）。
+    llm_description: The question or matter the user wants to divine about.
+  - name: model
+    type: model-selector
+    scope: llm
+    required: false
+    form: form
+    label:
+      en_US: Interpretation Model
+      zh_Hans: 解读模型
+    human_description:
+      en_US: LLM used for AI interpretation; leave empty to cast only.
+      zh_Hans: 用于 AI 解读的模型；不选则只起卦不解读。
+    llm_description: Model configuration for AI interpretation.
+  - name: interpret
+    type: boolean
+    required: false
+    form: form
+    default: true
+    label:
+      en_US: Enable AI Interpretation
+      zh_Hans: 启用 AI 解读
+    human_description:
+      en_US: Whether to run AI interpretation with the selected model.
+      zh_Hans: 是否用所选模型生成 AI 解读。
+    llm_description: Whether to run AI interpretation after casting.
+  - name: throws
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Coin Throws (six values 6/7/8/9)
+      zh_Hans: 六爻掷币结果（6/7/8/9）
+    human_description:
+      en_US: Six toss results comma separated, e.g. 7,8,9,6,7,8 (bottom to
+        top); empty for random.
+      zh_Hans: 六爻掷币结果，逗号分隔，自下而上，如 7,8,9,6,7,8；不填则自动掷币。
+    llm_description: Six comma-separated coin toss values (6 old yin, 7 young
+      yang, 8 young yin, 9 old yang), bottom to top. Omit for random tossing.
+  - name: seed
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Seed (reproducible)
+      zh_Hans: 可复现种子
+    human_description:
+      en_US: Optional seed to make the random casting reproducible.
+      zh_Hans: 可选种子，传入后掷币结果可复现。
+    llm_description: Optional seed string for reproducible random casting.
+output_schema:
+  type: object
+  properties:
+    method:
+      type: string
+      description: Method name.
+    summary:
+      type: string
+      description: Human-readable hexagram summary.
+    result:
+      type: object
+      description: Full structured hexagram result.
+    interpretation:
+      type: string
+      description: AI interpretation (empty if skipped or failed).
+extra:
+  python:
+    source: tools/coin_hexagram.py

@@ -1,0 +1,105 @@
+identity:
+  name: tarot
+  author: kagurazaka135
+  label:
+    en_US: Tarot Reading
+    zh_Hans: 塔罗牌占卜
+description:
+  human:
+    en_US: Draw tarot cards for a question (single card, three cards, or Celtic
+      Cross). For entertainment only.
+    zh_Hans: 为所问之事抽塔罗牌（单张卡 / 三张牌阵 / 凯尔特十字阵）。占卜结果仅供娱乐。
+  llm: Draw tarot cards with a chosen spread. Use when the user asks for 塔罗牌
+    tarot reading. Optional spread (single_card / three_card / celtic_cross,
+    default three_card) and optional seed for reproducible draws. For
+    entertainment only.
+parameters:
+  - name: question
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Question
+      zh_Hans: 所问之事
+    human_description:
+      en_US: What the user wants to ask about.
+      zh_Hans: 用户所问之事。
+    llm_description: The question or matter the user wants to divine about.
+  - name: model
+    type: model-selector
+    scope: llm
+    required: false
+    form: form
+    label:
+      en_US: Interpretation Model
+      zh_Hans: 解读模型
+    human_description:
+      en_US: LLM used for AI interpretation; leave empty to draw only.
+      zh_Hans: 用于 AI 解读的模型；不选则只抽牌不解读。
+    llm_description: Model configuration for AI interpretation.
+  - name: interpret
+    type: boolean
+    required: false
+    form: form
+    default: true
+    label:
+      en_US: Enable AI Interpretation
+      zh_Hans: 启用 AI 解读
+    human_description:
+      en_US: Whether to run AI interpretation with the selected model.
+      zh_Hans: 是否用所选模型生成 AI 解读。
+    llm_description: Whether to run AI interpretation after drawing.
+  - name: spread
+    type: select
+    required: false
+    form: form
+    default: three_card
+    options:
+      - value: single_card
+        label:
+          en_US: Single Card
+          zh_Hans: 单张卡
+      - value: three_card
+        label:
+          en_US: Three Cards
+          zh_Hans: 三张牌阵
+      - value: celtic_cross
+        label:
+          en_US: Celtic Cross
+          zh_Hans: 凯尔特十字阵
+    label:
+      en_US: Spread
+      zh_Hans: 牌阵
+    human_description:
+      en_US: Tarot spread to use.
+      zh_Hans: 要使用的牌阵。
+    llm_description: Tarot spread selection.
+  - name: seed
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Seed (reproducible)
+      zh_Hans: 可复现种子
+    human_description:
+      en_US: Optional seed to make the draw reproducible.
+      zh_Hans: 可选种子，传入后抽牌结果可复现。
+    llm_description: Optional seed string for reproducible card draws.
+output_schema:
+  type: object
+  properties:
+    method:
+      type: string
+      description: Method name.
+    summary:
+      type: string
+      description: Human-readable draw summary.
+    result:
+      type: object
+      description: Full structured draw result.
+    interpretation:
+      type: string
+      description: AI interpretation (empty if skipped or failed).
+extra:
+  python:
+    source: tools/tarot.py

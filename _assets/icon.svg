@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect x="4" y="4" width="120" height="120" rx="24" fill="#1b1233"/>
+  <circle cx="64" cy="64" r="46" fill="none" stroke="#e8c96a" stroke-width="4"/>
+  <g stroke="#e8c96a" stroke-width="7" stroke-linecap="round">
+    <!-- 乾 ☰（上，三条阳爻） -->
+    <line x1="48" y1="30" x2="80" y2="30"/>
+    <line x1="48" y1="40" x2="80" y2="40"/>
+    <line x1="48" y1="50" x2="80" y2="50"/>
+    <!-- 坤 ☷（下，三条断开的阴爻） -->
+    <g>
+      <line x1="48" y1="86" x2="58" y2="86"/>
+      <line x1="70" y1="86" x2="80" y2="86"/>
+      <line x1="48" y1="96" x2="58" y2="96"/>
+      <line x1="70" y1="96" x2="80" y2="96"/>
+      <line x1="48" y1="106" x2="58" y2="106"/>
+      <line x1="70" y1="106" x2="80" y2="106"/>
+    </g>
+  </g>
+  <!-- 中间阴阳鱼 -->
+  <circle cx="64" cy="68" r="17" fill="#f5efe0"/>
+  <path d="M64 51 a17 17 0 0 1 0 34 a8.5 8.5 0 0 1 0 -17 a8.5 8.5 0 0 0 0 -17 Z" fill="#2b1f4d"/>
+  <circle cx="64" cy="59.5" r="3" fill="#2b1f4d"/>
+  <circle cx="64" cy="76.5" r="3" fill="#f5efe0"/>
+</svg>

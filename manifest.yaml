@@ -1,0 +1,40 @@
+version: 0.0.1
+type: plugin
+author: kagurazaka135
+name: cyber-oracle
+label:
+  en_US: Cyber Oracle
+  zh_Hans: 赛博神棍
+description:
+  en_US: Seven deterministic divination tools (Plum Blossom, Tarot, Bone Weight,
+    Zhuge Oracle, Xiao Liu Ren, Guan Di Lottery, Coin Hexagram) with optional
+    AI interpretation via reverse-invoked workspace LLM.
+  zh_Hans: 七种确定性排盘工具（梅花易数 / 塔罗牌 / 称骨算命 / 诸葛神数 / 小六壬 /
+    关帝灵签 / 金钱卦），排盘纯本地计算，可选接入工作区模型做 AI 解读。
+    占卜结果仅供娱乐。
+icon: icon.svg
+icon_dark: icon-dark.svg
+resource:
+  memory: 268435456
+  permission:
+    model:
+      enabled: true
+      llm: true
+plugins:
+  tools:
+    - provider/cyber_oracle.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+  minimum_dify_version: "1.0.0"
+created_at: 2026-10-22T00:00:00+08:00
+privacy: PRIVACY.md
+tags:
+  - utilities
+verified: false

@@ -1,0 +1,91 @@
+identity:
+  name: plum_blossom
+  author: kagurazaka135
+  label:
+    en_US: Plum Blossom Divination
+    zh_Hans: 梅花易数
+description:
+  human:
+    en_US: Cast a Plum Blossom hexagram from a date and hour (deterministic).
+      For entertainment only.
+    zh_Hans: 按日期与时辰起梅花易数时间卦（确定性排盘）。占卜结果仅供娱乐。
+  llm: Cast a Plum Blossom (Meihua Yishu) time-based hexagram. Use when the user
+    asks for 梅花易数 divination. Optional date (YYYY-MM-DD) and hour (0-23);
+    defaults to now. Returns original hexagram, changed hexagram, moving line,
+    and lunar info. For entertainment only.
+parameters:
+  - name: question
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Question
+      zh_Hans: 所问之事
+    human_description:
+      en_US: What the user wants to ask about (passed through for interpretation).
+      zh_Hans: 用户所问之事（用于 AI 解读）。
+    llm_description: The question or matter the user wants to divine about.
+  - name: model
+    type: model-selector
+    scope: llm
+    required: false
+    form: form
+    label:
+      en_US: Interpretation Model
+      zh_Hans: 解读模型
+    human_description:
+      en_US: LLM used for AI interpretation; leave empty to cast only.
+      zh_Hans: 用于 AI 解读的模型；不选则只排盘不解读。
+    llm_description: Model configuration for AI interpretation.
+  - name: interpret
+    type: boolean
+    required: false
+    form: form
+    default: true
+    label:
+      en_US: Enable AI Interpretation
+      zh_Hans: 启用 AI 解读
+    human_description:
+      en_US: Whether to run AI interpretation with the selected model.
+      zh_Hans: 是否用所选模型生成 AI 解读。
+    llm_description: Whether to run AI interpretation after casting.
+  - name: date
+    type: date
+    required: false
+    form: llm
+    label:
+      en_US: Casting Date
+      zh_Hans: 起卦日期
+    human_description:
+      en_US: Casting date in YYYY-MM-DD; defaults to today.
+      zh_Hans: 起卦日期，格式 YYYY-MM-DD，默认今天。
+    llm_description: Casting date in YYYY-MM-DD format. Defaults to today if omitted.
+  - name: hour
+    type: number
+    required: false
+    form: llm
+    label:
+      en_US: Casting Hour (0-23)
+      zh_Hans: 起卦小时（0-23）
+    human_description:
+      en_US: Casting hour in 24-hour format; defaults to the current hour.
+      zh_Hans: 起卦小时（24 小时制，0-23），默认当前小时。
+    llm_description: Casting hour in 24-hour format (0-23). Defaults to the current hour.
+output_schema:
+  type: object
+  properties:
+    method:
+      type: string
+      description: Method name.
+    summary:
+      type: string
+      description: Human-readable casting summary.
+    result:
+      type: object
+      description: Full structured casting result.
+    interpretation:
+      type: string
+      description: AI interpretation (empty if skipped or failed).
+extra:
+  python:
+    source: tools/plum_blossom.py

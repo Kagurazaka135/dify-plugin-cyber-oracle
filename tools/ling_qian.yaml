@@ -1,0 +1,90 @@
+identity:
+  name: ling_qian
+  author: kagurazaka135
+  label:
+    en_US: Guan Di Lottery Oracle
+    zh_Hans: 关帝灵签
+description:
+  human:
+    en_US: Draw a Guan Di oracle lot (1-100), optionally by number or seed.
+      For entertainment only.
+    zh_Hans: 抽关帝灵签（1-100），可指定签号或种子。占卜结果仅供娱乐。
+  llm: Draw a Guan Di oracle lot (关帝灵签, 1-100). Use when the user asks for
+    灵签 or 抽签. Optional lot number (1-100) or seed for reproducible draws;
+    random draw when omitted. For entertainment only.
+parameters:
+  - name: question
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Question
+      zh_Hans: 所问之事
+    human_description:
+      en_US: What the user wants to ask about (used for interpretation).
+      zh_Hans: 用户所问之事（用于 AI 解读）。
+    llm_description: The question or matter the user wants to divine about.
+  - name: model
+    type: model-selector
+    scope: llm
+    required: false
+    form: form
+    label:
+      en_US: Interpretation Model
+      zh_Hans: 解读模型
+    human_description:
+      en_US: LLM used for AI interpretation; leave empty to draw only.
+      zh_Hans: 用于 AI 解读的模型；不选则只抽签不解读。
+    llm_description: Model configuration for AI interpretation.
+  - name: interpret
+    type: boolean
+    required: false
+    form: form
+    default: true
+    label:
+      en_US: Enable AI Interpretation
+      zh_Hans: 启用 AI 解读
+    human_description:
+      en_US: Whether to run AI interpretation with the selected model.
+      zh_Hans: 是否用所选模型生成 AI 解读。
+    llm_description: Whether to run AI interpretation after drawing.
+  - name: qian_number
+    type: number
+    required: false
+    form: llm
+    label:
+      en_US: Lot Number (1-100)
+      zh_Hans: 签号（1-100）
+    human_description:
+      en_US: Draw a specific lot 1-100; leave empty for a random draw.
+      zh_Hans: 指定签号（1-100）；不填则随机抽签。
+    llm_description: Specific lot number between 1 and 100. Omit for a random draw.
+  - name: seed
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Seed (reproducible)
+      zh_Hans: 可复现种子
+    human_description:
+      en_US: Optional seed to make the random draw reproducible.
+      zh_Hans: 可选种子，传入后随机抽签结果可复现。
+    llm_description: Optional seed string for reproducible random draws.
+output_schema:
+  type: object
+  properties:
+    method:
+      type: string
+      description: Method name.
+    summary:
+      type: string
+      description: Human-readable lot summary.
+    result:
+      type: object
+      description: Full structured lot result.
+    interpretation:
+      type: string
+      description: AI interpretation (empty if skipped or failed).
+extra:
+  python:
+    source: tools/ling_qian.py
