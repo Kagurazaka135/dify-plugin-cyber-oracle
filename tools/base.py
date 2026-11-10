@@ -73,12 +73,14 @@ class BaseOracleTool(Tool):
         """返回 (interpretation, note)。解读失败不影响排盘。"""
         if tool_parameters.get("interpret") is False:
             return "", ""
-        model_cfg = tool_parameters.get("model")
-        if not model_cfg:
+        from utils.interpret import normalize_model_config
+
+        raw = tool_parameters.get("model")
+        if normalize_model_config(raw) is None:
             return "", "[未选择模型，已跳过 AI 解读]"
         try:
             from utils.interpret import interpret
-            text = interpret(self, model_cfg, self.METHOD_KEY, result, question)
+            text = interpret(self, raw, self.METHOD_KEY, result, question)
             return text, ""
         except Exception as e:
             return "", f"[解读失败] {type(e).__name__}: {e}"

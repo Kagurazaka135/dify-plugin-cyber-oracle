@@ -2,8 +2,8 @@
 
 Cyber Oracle (赛博神棍) is a divination tool plugin for Dify.
 
-- **Casting is local.** All seven divination methods are deterministic pure
-  computation performed inside the plugin process. No casting data is uploaded
+- **Casting is local.** All divination methods run as deterministic pure
+  computation inside the plugin process. No casting data is uploaded
   to any third party by the plugin itself.
 - **No API keys.** The plugin does not require, store, or transmit any LLM API
   key. It contains no network client of its own.

@@ -36,6 +36,8 @@ tools:
   - tools/xiao_liu_ren.yaml
   - tools/ling_qian.yaml
   - tools/coin_hexagram.yaml
+  - tools/auto_route.yaml
+  - tools/multi_cast.yaml
 extra:
   python:
     source: provider/cyber_oracle.py

@@ -22,6 +22,8 @@ TOOLS = [
     "xiao_liu_ren",
     "ling_qian",
     "coin_hexagram",
+    "auto_route",
+    "multi_cast",
 ]
 
 
@@ -30,7 +32,7 @@ def check_manifest():
     assert m["type"] == "plugin"
     assert m["name"] == "cyber-oracle"
     assert m["author"] == "kagurazaka135"
-    assert m["version"] == m["meta"]["version"] == "0.0.1"
+    assert m["version"] == m["meta"]["version"] == "0.0.5"
     assert m["resource"]["memory"] == 268435456
     assert m["resource"]["permission"]["model"]["enabled"] is True
     assert m["resource"]["permission"]["model"]["llm"] is True
@@ -45,7 +47,7 @@ def check_provider():
         (ROOT / "provider/cyber_oracle.yaml").read_text(encoding="utf-8")
     )
     assert p["identity"]["name"] == "cyber_oracle"
-    assert len(p["tools"]) == 7
+    assert len(p["tools"]) == 9
     assert p["extra"]["python"]["source"] == "provider/cyber_oracle.py"
     creds = p.get("credentials_for_provider", {})
     assert set(creds) == {"timezone"}, creds

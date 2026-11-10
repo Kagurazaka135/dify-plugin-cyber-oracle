@@ -1,0 +1,70 @@
+identity:
+  name: auto_route
+  author: kagurazaka135
+  label:
+    en_US: Auto-Select Method
+    zh_Hans: 自动选法
+description:
+  human:
+    en_US: Describe the question and the plugin picks the best-fitting method
+      (lost item, travel, love, money, decision) before casting. For
+      entertainment only.
+    zh_Hans: 只说问题，自动挑最合适的方法再起卦（寻物 → 小六壬、出行平安 → 关帝灵签、
+      感情 → 塔罗、财务 → 金钱卦、其余决策 → 梅花易数）。占卜结果仅供娱乐。
+  llm: Automatically choose the most suitable divination method from the question
+    and cast it. Use when the user asks for a fortune reading without naming a
+    specific method. For entertainment only.
+parameters:
+  - name: question
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Question
+      zh_Hans: 所问之事
+    human_description:
+      en_US: What the user wants to ask about; also decides which method is used.
+      zh_Hans: 用户所问之事；同时决定选哪一种方法。
+    llm_description: The question or matter to divine about.
+  - name: model
+    type: model-selector
+    scope: llm
+    required: false
+    form: form
+    label:
+      en_US: Interpretation Model
+      zh_Hans: 解读模型
+    human_description:
+      en_US: LLM used for AI interpretation; leave empty to cast only.
+      zh_Hans: 用于 AI 解读的模型；不选则只排盘不解读。
+    llm_description: Model configuration for AI interpretation.
+  - name: interpret
+    type: boolean
+    required: false
+    form: form
+    default: true
+    label:
+      en_US: Enable AI Interpretation
+      zh_Hans: 启用 AI 解读
+    human_description:
+      en_US: Whether to run AI interpretation with the selected model.
+      zh_Hans: 是否用所选模型生成 AI 解读。
+    llm_description: Whether to run AI interpretation after casting.
+output_schema:
+  type: object
+  properties:
+    method:
+      type: string
+      description: Method name.
+    summary:
+      type: string
+      description: Human-readable casting summary, prefixed with the routing reason.
+    result:
+      type: object
+      description: Full structured casting result; routing holds the decision.
+    interpretation:
+      type: string
+      description: AI interpretation (empty if skipped or failed).
+extra:
+  python:
+    source: tools/auto_route.py

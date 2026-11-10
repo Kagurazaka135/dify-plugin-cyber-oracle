@@ -1,0 +1,85 @@
+identity:
+  name: multi_cast
+  author: kagurazaka135
+  label:
+    en_US: Multi-Method Reading
+    zh_Hans: 一卦三问
+description:
+  human:
+    en_US: Cast Plum Blossom, Xiao Liu Ren and Tarot for the same question at the
+      same moment, interpret each, then merge them into one consensus / conflict
+      summary. For entertainment only.
+    zh_Hans: 同一时刻用梅花易数、小六壬、塔罗各起一卦，分别解读后再汇总成
+      「共识 / 分歧 / 综合倾向」一份。占卜结果仅供娱乐。
+  llm: Cast the same question with several divination methods at once, interpret
+    each one, and merge them into a single consensus summary. Slower and more
+    expensive than a single method (one model call per method plus one summary).
+    For entertainment only.
+parameters:
+  - name: question
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Question
+      zh_Hans: 所问之事
+    human_description:
+      en_US: What the user wants to ask about.
+      zh_Hans: 用户所问之事。
+    llm_description: The question or matter to divine about.
+  - name: model
+    type: model-selector
+    scope: llm
+    required: false
+    form: form
+    label:
+      en_US: Interpretation Model
+      zh_Hans: 解读模型
+    human_description:
+      en_US: LLM used for AI interpretation and the merged summary; leave empty
+        to cast only.
+      zh_Hans: 用于 AI 解读与汇总的模型；不选则只排盘不解读。
+    llm_description: Model configuration for AI interpretation.
+  - name: interpret
+    type: boolean
+    required: false
+    form: form
+    default: true
+    label:
+      en_US: Enable AI Interpretation
+      zh_Hans: 启用 AI 解读
+    human_description:
+      en_US: Whether to run AI interpretation with the selected model.
+      zh_Hans: 是否用所选模型生成 AI 解读。
+    llm_description: Whether to run AI interpretation after casting.
+  - name: include_coin
+    type: boolean
+    required: false
+    form: form
+    default: false
+    label:
+      en_US: Include Coin Hexagram
+      zh_Hans: 加入金钱卦
+    human_description:
+      en_US: Also cast the coin hexagram (fourth method). Its seed is derived from
+        the question and time, so it stays reproducible.
+      zh_Hans: 额外加一路金钱卦（第四种方法）。掷币种子由问题与时间派生，结果可复现。
+    llm_description: Whether to include the coin hexagram as a fourth method.
+output_schema:
+  type: object
+  properties:
+    method:
+      type: string
+      description: Method name.
+    summary:
+      type: string
+      description: Human-readable summary of every cast.
+    result:
+      type: object
+      description: Full structured results of all casts, keyed by method.
+    interpretation:
+      type: string
+      description: Merged summary followed by each method's interpretation.
+extra:
+  python:
+    source: tools/multi_cast.py

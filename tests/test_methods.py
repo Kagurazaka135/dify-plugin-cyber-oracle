@@ -135,6 +135,35 @@ def test_coin_hexagram():
         assert all(v in (6, 7, 8, 9) for v in calculate_coin_hexagram()["throws"])
 
 
+def test_hexagram_change():
+    """用卦符当基准穷举 64 卦 × 6 动爻核变卦（防震/艮爻线写反）。"""
+    from utils.hexagram import HEXAGRAMS, compute_changed_hexagram
+
+    symbol_lines = {
+        "☰": [1, 1, 1], "☱": [1, 1, 0], "☲": [1, 0, 1], "☳": [1, 0, 0],
+        "☴": [0, 1, 1], "☵": [0, 1, 0], "☶": [0, 0, 1], "☷": [0, 0, 0],
+    }
+    lines_to_num = {tuple(v): n for n, v in enumerate(symbol_lines.values(), 1)}
+
+    for (upper, lower), (name, symbol) in HEXAGRAMS.items():
+        up = list(symbol_lines[symbol[0]])
+        lo = list(symbol_lines[symbol[1]])
+        for moving in range(1, 7):
+            new_up, new_lo = list(up), list(lo)
+            if moving <= 3:
+                new_lo[moving - 1] ^= 1
+            else:
+                new_up[moving - 4] ^= 1
+            want = HEXAGRAMS[
+                (lines_to_num[tuple(new_up)], lines_to_num[tuple(new_lo)])
+            ][0]
+            got = compute_changed_hexagram(upper, lower, moving)["name"]
+            assert got == want, f"{name} 第{moving}爻：算出{got}，应为{want}"
+
+    # 历史 bug：火山旅初爻应得离为火
+    assert compute_changed_hexagram(3, 7, 1)["name"] == "离为火"
+
+
 def main():
     tests = [
         test_plum_blossom,
@@ -144,6 +173,7 @@ def main():
         test_xiao_liu_ren,
         test_ling_qian,
         test_coin_hexagram,
+        test_hexagram_change,
     ]
     for test in tests:
         test()

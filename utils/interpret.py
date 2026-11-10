@@ -5,7 +5,63 @@
 ``session.model.llm.invoke`` 反向调用，插件内不持有任何 API Key（F6）。
 """
 
+import ast
+import json
+import re
+
 from dify_plugin.entities.model.message import SystemPromptMessage, UserPromptMessage
+
+_THINK_BLOCK = re.compile(r"<think>.*?</think>", re.S)
+_THINK_UNCLOSED = re.compile(r"<think>.*$", re.S)
+_REASONING_MARK = re.compile(r"<!--\s*dify-deepseek-reasoning\s*-->")
+
+
+def strip_reasoning(text: str) -> str:
+    """剥掉推理模型的思考过程。
+
+    DeepSeek 这类推理模型会把 <think> 段一起塞进 content，Dify 不总剥干净，
+    直接展示就是一大坨「我们需要回答用户…」的自言自语。
+    """
+    if not text:
+        return text
+    cleaned = _THINK_BLOCK.sub("", text)
+    cleaned = _THINK_UNCLOSED.sub("", cleaned)
+    cleaned = _REASONING_MARK.sub("", cleaned).strip()
+    if cleaned:
+        return cleaned
+    # 未闭合的 <think> 会把正文一起吞掉；这时宁可留着啰嗦的原话，也不返回空
+    return _REASONING_MARK.sub("", text).strip()
+
+
+def normalize_model_config(model_cfg):
+    """把 model-selector 的值归一成 llm.invoke 认的裸配置。
+
+    Dify 传给插件的形态不固定：有时是裸 dict，有时包着
+    ``{"type": "constant", "value": {...}}``（可选参数走 tool_configurations
+    时会保留这层包装），有时被序列化成字符串。直接丢给 llm.invoke 会抛
+    ValidationError: provider/model/mode Field required。
+    """
+    value = model_cfg
+    if isinstance(value, str) and value.strip()[:1] in "{[":
+        try:
+            value = ast.literal_eval(value)
+        except (ValueError, SyntaxError):
+            try:
+                value = json.loads(value)
+            except (ValueError, json.JSONDecodeError):
+                return None
+    if isinstance(value, dict) and "value" in value and "type" in value:
+        value = value["value"]
+    if not isinstance(value, dict):
+        return None
+    # llm.invoke 至少需要 provider + model，缺任何一个都等于没选模型
+    if not value.get("provider") or not value.get("model"):
+        return None
+    cfg = dict(value)
+    cfg.setdefault("model_type", "llm")
+    cfg.setdefault("mode", "chat")
+    cfg.setdefault("completion_params", {})
+    return cfg
 
 
 def _build_plum_blossom(result, question):
@@ -222,6 +278,9 @@ def build_prompt(method_key, result, question):
 
 def interpret(tool, model_cfg, method_key, result, question) -> str:
     """tool 是当前 Tool 实例（提供 session），method_key 决定用哪套提示词。"""
+    model_cfg = normalize_model_config(model_cfg)
+    if model_cfg is None:
+        raise ValueError("模型配置无法解析，请重新选择解读模型")
     system, user = build_prompt(method_key, result, question)
     messages = [SystemPromptMessage(content=system), UserPromptMessage(content=user)]
     resp = tool.session.model.llm.invoke(
@@ -229,4 +288,34 @@ def interpret(tool, model_cfg, method_key, result, question) -> str:
         prompt_messages=messages,
         stream=False,
     )
-    return (resp.message.content or "").strip()
+    return strip_reasoning(resp.message.content or "")
+
+
+def summarize_multi(tool, model_cfg, question, casts_text, readings) -> str:
+    """一卦三问的汇总：只吃三份解读的结论，不复述卦象细节。"""
+    model_cfg = normalize_model_config(model_cfg)
+    if model_cfg is None:
+        raise ValueError("模型配置无法解析，请重新选择解读模型")
+    system = (
+        "你是同时会用多种占卜法的师傅。三个徒弟对同一个问题各自起了一卦、"
+        "各自解了一遍，你要做的是汇总，不是把三份解读再复述一遍：\n\n"
+        "一、共识：三份解读一致指向什么？这个共识靠不靠谱，为什么。\n"
+        "二、分歧：哪两路在打架？说明是方法看的侧面不同，还是真矛盾。\n"
+        "三、综合倾向：给一个整体判断，说清你更看重哪一路、理由是什么。\n"
+        "四、一句建议：落到具体可执行的动作。\n\n"
+        "注意：不要四平八稳各夸一遍，那是废话；有冲突就直接说冲突，"
+        "拿不出统一结论也直说。用朋友聊天的语气，不要编号列表和加粗，"
+        "控制在 400 字以内。"
+    )
+    user = (
+        f"用户所问之事：{question or '一般指引'}\n\n"
+        f"三卦结果：\n{casts_text}\n\n"
+        f"三份解读：\n{readings}"
+    )
+    messages = [SystemPromptMessage(content=system), UserPromptMessage(content=user)]
+    resp = tool.session.model.llm.invoke(
+        model_config=model_cfg,
+        prompt_messages=messages,
+        stream=False,
+    )
+    return strip_reasoning(resp.message.content or "")
